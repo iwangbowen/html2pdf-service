@@ -64,7 +64,7 @@ app.post('/convert', async (req, res) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'HTML to PDF service is running' });
+  res.json({ status: 'OK', message: 'HTML to PDF 服务正在运行' });
 });
 
 app.listen(PORT, () => {

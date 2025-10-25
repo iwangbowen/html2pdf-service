@@ -1,57 +1,57 @@
-# HTML to PDF Service
+# HTML to PDF 服务
 
-A Node.js service that converts HTML content to PDF using headless browser rendering, providing browser-like print quality output.
+一个使用 Node.js 和无头浏览器渲染将 HTML 内容转换为 PDF 的服务，提供类似浏览器的打印质量输出。
 
-## Features
+## 功能特性
 
-- **High-Quality Rendering**: Uses Puppeteer with headless Chrome/Chromium for accurate HTML to PDF conversion
-- **Browser-like Output**: Mimics browser print functionality with full CSS support, including backgrounds, fonts, and layouts
-- **RESTful API**: Simple HTTP API for easy integration
-- **Customizable Options**: Support for various PDF options like format, margins, and orientation
-- **Demo Interface**: Built-in web interface for testing and demonstration
-- **Fast Processing**: Efficient headless browser management for quick conversions
+- **高质量渲染**：使用 Puppeteer 和无头 Chrome/Chromium 进行精确的 HTML 到 PDF 转换
+- **浏览器级输出**：模拟浏览器打印功能，具有完整的 CSS 支持，包括背景、字体和布局
+- **RESTful API**：简单的 HTTP API，便于集成
+- **可自定义选项**：支持各种 PDF 选项，如格式、边距和方向
+- **演示界面**：内置 Web 界面用于测试和演示
+- **快速处理**：高效的无头浏览器管理，实现快速转换
 
-## Quick Start
+## 快速开始
 
-### Prerequisites
+### 前置要求
 
-- Node.js (v14 or higher)
-- npm or yarn
+- Node.js (v14 或更高版本)
+- npm 或 yarn
 
-### Installation
+### 安装
 
-1. Clone the repository:
+1. 克隆仓库：
 ```bash
 git clone <repository-url>
 cd html2pdf-service
 ```
 
-2. Install dependencies:
+2. 安装依赖：
 ```bash
 npm install
 ```
 
-3. Start the service:
+3. 启动服务：
 ```bash
 npm start
 ```
 
-For development with auto-restart:
+开发模式（自动重启）：
 ```bash
 npm run dev
 ```
 
-The service will be available at `http://localhost:3000`
+服务将在 `http://localhost:3000` 上可用
 
-## API Usage
+## API 使用
 
-### Convert HTML to PDF
+### 将 HTML 转换为 PDF
 
-**Endpoint:** `POST /convert`
+**端点：** `POST /convert`
 
-**Content-Type:** `application/json`
+**Content-Type：** `application/json`
 
-**Request Body:**
+**请求体：**
 ```json
 {
   "html": "<!DOCTYPE html><html><body><h1>Hello World</h1></body></html>",
@@ -68,19 +68,19 @@ The service will be available at `http://localhost:3000`
 }
 ```
 
-**Response:** PDF file (application/pdf)
+**响应：** PDF 文件 (application/pdf)
 
-### Parameters
+### 参数说明
 
-- `html` (required): The HTML content to convert
-- `options` (optional): PDF generation options
-  - `format`: Page format ('A4', 'A3', 'Letter', etc.)
-  - `printBackground`: Include background colors and images (default: true)
-  - `margin`: Page margins (top, right, bottom, left)
-  - `orientation`: Page orientation ('portrait' or 'landscape')
-  - `width` / `height`: Custom page dimensions
+- `html` (必需)：要转换的 HTML 内容
+- `options` (可选)：PDF 生成选项
+  - `format`：页面格式 ('A4', 'A3', 'Letter', 等)
+  - `printBackground`：包含背景颜色和图片 (默认: true)
+  - `margin`：页面边距 (上、右、下、左)
+  - `orientation`：页面方向 ('portrait' 或 'landscape')
+  - `width` / `height`：自定义页面尺寸
 
-### Example using curl
+### 使用 curl 示例
 
 ```bash
 curl -X POST http://localhost:3000/convert \
@@ -91,7 +91,7 @@ curl -X POST http://localhost:3000/convert \
   --output result.pdf
 ```
 
-### Example using JavaScript (Node.js)
+### 使用 JavaScript (Node.js) 示例
 
 ```javascript
 const fetch = require('node-fetch');
@@ -121,20 +121,20 @@ async function convertToPDF(html) {
   if (response.ok) {
     const buffer = await response.buffer();
     fs.writeFileSync('output.pdf', buffer);
-    console.log('PDF saved successfully');
+    console.log('PDF 保存成功');
   } else {
-    console.error('Conversion failed');
+    console.error('转换失败');
   }
 }
 
-// Usage
+// 使用示例
 const html = `
 <!DOCTYPE html>
 <html>
-<head><title>My Document</title></head>
+<head><title>我的文档</title></head>
 <body>
   <h1>Hello PDF</h1>
-  <p>This will be converted to PDF.</p>
+  <p>这将被转换为 PDF。</p>
 </body>
 </html>
 `;
@@ -142,7 +142,7 @@ const html = `
 convertToPDF(html);
 ```
 
-### Example using Python
+### 使用 Python 示例
 
 ```python
 import requests
@@ -169,18 +169,18 @@ def convert_html_to_pdf(html_content, output_file='output.pdf'):
     if response.status_code == 200:
         with open(output_file, 'wb') as f:
             f.write(response.content)
-        print(f'PDF saved to {output_file}')
+        print(f'PDF 已保存到 {output_file}')
     else:
-        print(f'Error: {response.status_code}')
+        print(f'错误: {response.status_code}')
 
-# Usage
+# 使用示例
 html = '''
 <!DOCTYPE html>
 <html>
-<head><title>My Document</title></head>
+<head><title>我的文档</title></head>
 <body>
   <h1>Hello PDF</h1>
-  <p>This will be converted to PDF.</p>
+  <p>这将被转换为 PDF。</p>
 </body>
 </html>
 '''
@@ -188,36 +188,36 @@ html = '''
 convert_html_to_pdf(html)
 ```
 
-## Web Interface
+## Web 界面
 
-Visit `http://localhost:3000` to access the built-in demo interface where you can:
+访问 `http://localhost:3000` 来使用内置演示界面，您可以：
 
-- Test HTML to PDF conversion
-- Try pre-built examples (simple text, styled content, tables, images)
-- See real-time conversion results
+- 测试 HTML 到 PDF 转换
+- 尝试预构建的示例（简单文本、样式内容、表格、图片）
+- 查看实时转换结果
 
-## Health Check
+## 健康检查
 
-**Endpoint:** `GET /health`
+**端点：** `GET /health`
 
-Returns service status information.
+返回服务状态信息。
 
 ```json
 {
   "status": "OK",
-  "message": "HTML to PDF service is running"
+  "message": "HTML to PDF 服务正在运行"
 }
 ```
 
-## Configuration
+## 配置
 
-### Environment Variables
+### 环境变量
 
-- `PORT`: Server port (default: 3000)
+- `PORT`：服务器端口 (默认: 3000)
 
-### Puppeteer Options
+### Puppeteer 选项
 
-The service uses the following Puppeteer launch options for optimal performance:
+服务使用以下 Puppeteer 启动选项以获得最佳性能：
 
 ```javascript
 {
@@ -226,76 +226,76 @@ The service uses the following Puppeteer launch options for optimal performance:
 }
 ```
 
-## Supported HTML Features
+## 支持的 HTML 特性
 
-- Full CSS support (including @media print styles)
-- Images (URLs and base64 encoded)
-- Fonts and typography
-- Tables and complex layouts
-- SVG graphics
-- Canvas elements
-- Web fonts (Google Fonts, etc.)
+- 完整的 CSS 支持（包括 @media print 样式）
+- 图片（URL 和 base64 编码）
+- 字体和排版
+- 表格和复杂布局
+- SVG 图形
+- Canvas 元素
+- Web 字体（Google Fonts 等）
 
-## Limitations
+## 限制
 
-- External resources must be accessible (images, fonts, etc.)
-- JavaScript execution is limited to initial page load
-- Large HTML content may require increased memory limits
+- 外部资源必须可访问（图片、字体等）
+- JavaScript 执行仅限于初始页面加载
+- 大型 HTML 内容可能需要增加内存限制
 
-## Development
+## 开发
 
-### Project Structure
+### 项目结构
 
 ```
 html2pdf-service/
-├── server.js          # Main server file
-├── package.json       # Dependencies and scripts
-├── public/           # Static web files
-│   └── index.html    # Demo interface
-└── README.md         # This file
+├── server.js          # 主服务器文件
+├── package.json       # 依赖和脚本
+├── public/           # 静态 Web 文件
+│   └── index.html    # 演示界面
+└── README.md         # 此文件
 ```
 
-### Adding Custom Options
+### 添加自定义选项
 
-You can extend the PDF options by modifying the `pdfOptions` object in `server.js`:
+您可以通过修改 `server.js` 中的 `pdfOptions` 对象来扩展 PDF 选项：
 
 ```javascript
 const pdfOptions = {
   format: 'A4',
   printBackground: true,
-  // Add custom options here
+  // 在此处添加自定义选项
   displayHeaderFooter: true,
-  headerTemplate: '<div>Header</div>',
-  footerTemplate: '<div>Footer</div>',
+  headerTemplate: '<div>页眉</div>',
+  footerTemplate: '<div>页脚</div>',
   ...options
 };
 ```
 
-## Troubleshooting
+## 故障排除
 
-### Common Issues
+### 常见问题
 
-1. **Browser launch fails**: Ensure proper permissions for Puppeteer
-2. **Large PDFs fail**: Increase Node.js memory limit: `node --max-old-space-size=4096 server.js`
-3. **Images not loading**: Ensure image URLs are accessible and use HTTPS where possible
-4. **CSS not applied**: Check that styles are properly embedded or linked
+1. **浏览器启动失败**：确保 Puppeteer 有适当的权限
+2. **大型 PDF 失败**：增加 Node.js 内存限制：`node --max-old-space-size=4096 server.js`
+3. **图片无法加载**：确保图片 URL 可访问并尽可能使用 HTTPS
+4. **CSS 未应用**：检查样式是否正确嵌入或链接
 
-### Logs
+### 日志
 
-Server logs are output to the console. For production, consider using a logging framework.
+服务器日志输出到控制台。生产环境建议使用日志框架。
 
-## License
+## 许可证
 
-MIT License - see LICENSE file for details.
+MIT 许可证 - 详见 LICENSE 文件。
 
-## Contributing
+## 贡献
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+1. Fork 此仓库
+2. 创建功能分支
+3. 进行修改
+4. 添加测试（如适用）
+5. 提交拉取请求
 
-## Support
+## 支持
 
-For issues and questions, please create an issue in the repository.
+如有问题和疑问，请在仓库中创建 issue。
