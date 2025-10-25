@@ -97,8 +97,8 @@ npm run dev
 
 项目使用预构建的 Chrome/Chromium 基础镜像，无需手动安装浏览器：
 
-- **zenika/alpine-chrome**：推荐使用的轻量级 Alpine Linux + Chrome 镜像
-- **buildkite/puppeteer**：包含 Node.js 和 Puppeteer 的完整镜像
+- **buildkite/puppeteer**：当前使用的完整镜像，包含 Node.js、Puppeteer 和 Chrome
+- **zenika/alpine-chrome**：轻量级 Alpine Linux + Chrome 镜像
 - **chromedp/headless-shell**：Chrome 官方 headless shell 镜像
 
 这些镜像已经预装了 Chromium/Chrome，无需在构建过程中下载，大大加快构建速度。

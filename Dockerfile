@@ -1,18 +1,12 @@
-# Use pre-built Chrome image with Node.js
-FROM zenika/alpine-chrome:latest
-
-# Install Node.js
-RUN apk add --no-cache \
-    nodejs \
-    npm \
-    && rm -rf /var/cache/apk/*
+# Use pre-built Puppeteer image with Node.js and Chromium
+FROM buildkite/puppeteer:latest
 
 # Set working directory
 WORKDIR /app
 
 # Set Puppeteer to skip downloading Chromium (already included in base image)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 # Copy package files
 COPY package*.json ./

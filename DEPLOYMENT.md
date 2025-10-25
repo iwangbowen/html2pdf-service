@@ -15,15 +15,15 @@
 
 #### 推荐镜像选项
 
-1. **zenika/alpine-chrome** (当前使用)
+1. **buildkite/puppeteer** (当前使用)
+   - 包含 Node.js、Puppeteer 和 Chrome
+   - Ubuntu 基础，功能完整
+   - 定期更新，稳定可靠
+
+2. **zenika/alpine-chrome**
    - 基于 Alpine Linux，轻量级
    - 预装最新稳定版 Chrome
    - 专门为容器化优化
-
-2. **buildkite/puppeteer**
-   - 包含 Node.js 和 Puppeteer
-   - Ubuntu 基础，功能完整
-   - 定期更新
 
 3. **chromedp/headless-shell**
    - Chrome 官方 headless shell
