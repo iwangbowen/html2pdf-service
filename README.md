@@ -87,11 +87,21 @@ npm run dev
 
 详细的部署指南请参考 [DEPLOYMENT.md](DEPLOYMENT.md)，其中包含：
 
-- Docker 容器化部署
+- Docker 容器化部署（使用预构建镜像）
 - 生产环境配置
 - Kubernetes 部署
 - 云服务部署选项
 - 监控和维护指南
+
+### Docker 镜像说明
+
+项目使用预构建的 Chrome/Chromium 基础镜像，无需手动安装浏览器：
+
+- **zenika/alpine-chrome**：推荐使用的轻量级 Alpine Linux + Chrome 镜像
+- **buildkite/puppeteer**：包含 Node.js 和 Puppeteer 的完整镜像
+- **chromedp/headless-shell**：Chrome 官方 headless shell 镜像
+
+这些镜像已经预装了 Chromium/Chrome，无需在构建过程中下载，大大加快构建速度。
 
 ## API 使用
 

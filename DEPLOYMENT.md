@@ -9,6 +9,40 @@
 - Docker >= 20.0
 - Docker Compose >= 2.0
 
+### 镜像选择
+
+项目使用预构建的基础镜像，无需手动安装 Chrome/Chromium：
+
+#### 推荐镜像选项
+
+1. **zenika/alpine-chrome** (当前使用)
+   - 基于 Alpine Linux，轻量级
+   - 预装最新稳定版 Chrome
+   - 专门为容器化优化
+
+2. **buildkite/puppeteer**
+   - 包含 Node.js 和 Puppeteer
+   - Ubuntu 基础，功能完整
+   - 定期更新
+
+3. **chromedp/headless-shell**
+   - Chrome 官方 headless shell
+   - 最小化镜像大小
+   - 最新的 Chrome 功能
+
+#### 切换镜像
+
+如需使用其他镜像，修改 `Dockerfile` 的第一行：
+
+```dockerfile
+# 使用 buildkite/puppeteer
+FROM buildkite/puppeteer:latest
+
+# 或使用 chromedp/headless-shell
+FROM chromedp/headless-shell:latest
+RUN apk add --no-cache nodejs npm
+```
+
 ### 快速部署
 
 1. **克隆项目**：

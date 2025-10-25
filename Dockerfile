@@ -1,21 +1,16 @@
-# Use Node.js 18 LTS Alpine for smaller image size
-FROM node:18-alpine
+# Use pre-built Chrome image with Node.js
+FROM zenika/alpine-chrome:latest
+
+# Install Node.js
+RUN apk add --no-cache \
+    nodejs \
+    npm \
+    && rm -rf /var/cache/apk/*
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies needed for Puppeteer
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    freetype-dev \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    && rm -rf /var/cache/apk/*
-
-# Set Puppeteer to skip downloading Chromium (we installed it manually)
+# Set Puppeteer to skip downloading Chromium (already included in base image)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
