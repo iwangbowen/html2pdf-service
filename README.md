@@ -13,12 +13,52 @@
 
 ## 快速开始
 
-### 前置要求
+### 方法一：使用 Docker（推荐）
+
+#### 前置要求
+
+- Docker
+- Docker Compose
+
+#### 快速启动
+
+1. 克隆仓库：
+```bash
+git clone <repository-url>
+cd html2pdf-service
+```
+
+2. 使用 Docker Compose 启动：
+```bash
+docker-compose up -d
+```
+
+服务将在 `http://localhost:3000` 上可用
+
+#### 其他 Docker 命令
+
+```bash
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f html2pdf-service
+
+# 停止服务
+docker-compose down
+
+# 重新构建镜像
+docker-compose build --no-cache
+```
+
+### 方法二：本地开发
+
+#### 前置要求
 
 - Node.js (v14 或更高版本)
 - npm 或 yarn
 
-### 安装
+#### 安装和运行
 
 1. 克隆仓库：
 ```bash
