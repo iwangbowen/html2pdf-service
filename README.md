@@ -83,6 +83,16 @@ npm run dev
 
 服务将在 `http://localhost:3000` 上可用
 
+## 部署
+
+详细的部署指南请参考 [DEPLOYMENT.md](DEPLOYMENT.md)，其中包含：
+
+- Docker 容器化部署
+- 生产环境配置
+- Kubernetes 部署
+- 云服务部署选项
+- 监控和维护指南
+
 ## API 使用
 
 ### 将 HTML 转换为 PDF
