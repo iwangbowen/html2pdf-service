@@ -31,7 +31,7 @@ docker-compose ps
 docker-compose logs -f html2pdf-service
 
 # 测试健康检查
-curl http://localhost:3000/health
+curl http://localhost:3100/health
 ```
 
 ### 生产环境配置
@@ -41,7 +41,7 @@ curl http://localhost:3000/health
 创建 `.env` 文件：
 ```bash
 # 服务器配置
-PORT=3000
+PORT=3100
 NODE_ENV=production
 
 # Puppeteer 配置
@@ -58,13 +58,13 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3100:3100"
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=3100
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3100/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -115,7 +115,7 @@ events {
 
 http {
     upstream html2pdf_backend {
-        server html2pdf-service:3000;
+        server html2pdf-service:3100;
     }
 
     server {
@@ -183,7 +183,7 @@ module.exports = {
     max_memory_restart: '1G',
     env: {
       NODE_ENV: 'production',
-      PORT: 3000
+      PORT: 3100
     }
   }]
 };
@@ -202,7 +202,7 @@ pm2 startup
 
 服务提供健康检查端点：
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:3100/health
 ```
 
 ### 日志查看
@@ -281,7 +281,7 @@ spec:
       - name: html2pdf-service
         image: your-registry/html2pdf-service:latest
         ports:
-        - containerPort: 3000
+        - containerPort: 3100
         env:
         - name: NODE_ENV
           value: "production"
@@ -295,13 +295,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: 3000
+            port: 3100
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /health
-            port: 3000
+            port: 3100
           initialDelaySeconds: 5
           periodSeconds: 5
 ```
