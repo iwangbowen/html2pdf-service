@@ -12,18 +12,10 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+RUN npm install --production && npm cache clean --force
 
 # Copy application code
 COPY . .
-
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S html2pdf -u 1001
-
-# Change ownership of app directory
-RUN chown -R html2pdf:nodejs /app
-USER html2pdf
 
 # Expose port
 EXPOSE 3100
