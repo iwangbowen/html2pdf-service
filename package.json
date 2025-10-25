@@ -1,0 +1,20 @@
+{
+  "name": "html2pdf-service",
+  "version": "1.0.0",
+  "description": "HTML to PDF conversion service using Node.js and headless browser rendering",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": ["html", "pdf", "conversion", "nodejs", "puppeteer"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0",
+    "puppeteer": "^24.26.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}
