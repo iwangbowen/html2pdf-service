@@ -12,10 +12,14 @@ app.use(express.static('public'));
 
 // PDF conversion endpoint
 app.post('/convert', async (req, res) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] PDF conversion request received`);
+
   try {
     const { html, options = {} } = req.body;
 
     if (!html) {
+      console.log(`[${timestamp}] PDF conversion failed: HTML content is required`);
       return res.status(400).json({ error: 'HTML content is required' });
     }
 
@@ -49,6 +53,8 @@ app.post('/convert', async (req, res) => {
     // Close browser
     await browser.close();
 
+    console.log(`[${timestamp}] PDF conversion successful, size: ${pdfBuffer.length} bytes`);
+
     // Set response headers
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename="converted.pdf"');
@@ -57,18 +63,21 @@ app.post('/convert', async (req, res) => {
     res.send(pdfBuffer);
 
   } catch (error) {
-    console.error('PDF conversion error:', error);
+    console.error(`[${timestamp}] PDF conversion error:`, error);
     res.status(500).json({ error: 'Failed to convert HTML to PDF' });
   }
 });
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] Health check request`);
   res.json({ status: 'OK', message: 'HTML to PDF 服务正在运行' });
 });
 
 app.listen(PORT, () => {
-  console.log(`HTML to PDF service running on port ${PORT}`);
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] HTML to PDF service running on port ${PORT}`);
 });
 
 module.exports = app;
