@@ -17,20 +17,30 @@
 
 ### 前置要求
 
-- Docker (>= 20.0)
-- Docker Compose (>= 2.0)
+- Docker >= 20.0
+- Docker Compose >= 2.0
+- Git
 
 ### 开发环境设置
 
-1. 克隆仓库：
+1. **克隆仓库**：
 ```bash
 git clone <repository-url>
 cd html2pdf-service
 ```
 
-2. 使用 Docker Compose 启动开发环境：
+2. **启动开发环境**：
 ```bash
 docker-compose up -d
+```
+
+3. **验证环境**：
+```bash
+# 检查服务状态
+curl http://localhost:3200/health
+
+# 查看日志
+docker-compose logs -f html2pdf-service
 ```
 
 服务将在 `http://localhost:3200` 上可用
@@ -56,45 +66,520 @@ docker-compose build --no-cache
 docker-compose exec html2pdf-service sh
 ```
 
-#### 代码开发
+#### 代码修改和测试
 
-- 修改代码后，重新构建镜像以应用更改：
+1. **修改代码**：直接编辑项目文件
+
+2. **重新构建和重启**：
 ```bash
+# 重新构建镜像并重启服务
 docker-compose build --no-cache && docker-compose up -d
 ```
 
-- 对于频繁的代码迭代，可以使用卷挂载（如果需要热重载，请参考 CONTRIBUTING.md）
+3. **测试更改**：
+```bash
+# 测试 API
+curl -X POST http://localhost:3200/convert \
+  -H "Content-Type: application/json" \
+  -d '{"html": "<h1>Test</h1>"}' \
+  --output test.pdf
+
+# 访问 Web 界面
+open http://localhost:3200
+```
+
+#### 调试技巧
+
+- **查看实时日志**：
+```bash
+docker-compose logs -f html2pdf-service
+```
+
+- **进入容器调试**：
+```bash
+docker-compose exec html2pdf-service sh
+```
+
+- **检查容器状态**：
+```bash
+docker-compose ps
+```
+
+#### 性能优化开发
+
+对于频繁的代码迭代，可以临时启用卷挂载（注意：这可能影响性能）：
+
+1. 修改 `docker-compose.yml`：
+```yaml
+services:
+  html2pdf-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3200:3200"
+    volumes:
+      - .:/app
+      - /app/node_modules  # 排除 node_modules 以避免挂载问题
+    environment:
+      - NODE_ENV=development
+```
+
+2. 重启服务：
+```bash
+docker-compose up -d
+```
+
+**警告**：卷挂载仅用于开发调试，最终测试和提交前必须使用完整 Docker 构建。
 
 ### 为什么使用 Docker？
 
-- **环境一致性**：确保所有开发者和 CI/CD 环境完全一致
-- **依赖隔离**：避免系统级依赖冲突
-- **简化部署**：开发环境与生产环境完全相同
-- **跨平台兼容**：Windows、macOS、Linux 行为一致
+- **环境一致性**：确保所有贡献者使用相同的运行时环境
+- **跨平台兼容**：Windows、macOS、Linux 开发体验完全一致
+- **依赖隔离**：避免本地环境污染和版本冲突
+- **CI/CD 对齐**：开发环境与生产部署环境完全相同
+- **简化协作**：新贡献者无需复杂的环境配置
 
 ## 部署
 
-详细的部署指南请参考 [DEPLOYMENT.md](DEPLOYMENT.md)，其中包含：
+### Docker 部署（推荐）
 
-- Docker 容器化部署（使用预构建镜像）
-- 生产环境配置
-- Kubernetes 部署
-- 云服务部署选项
-- 监控和维护指南
+#### 前置要求
 
-### Docker 镜像说明
+- Docker >= 20.0
+- Docker Compose >= 2.0
 
-项目使用轻量级基础镜像，通过 Dockerfile 手动安装 Chromium，无需预构建镜像：
+#### 镜像选择
 
-- **node:18-alpine with manual Chromium installation**：当前使用的轻量级镜像，基于 Alpine Linux
-  - Node.js 18 + 手动安装 Chromium 和系统依赖
-  - 最小化镜像大小，精确控制版本
-  - 适合生产环境部署
-- **buildkite/puppeteer**：完整镜像，包含 Node.js、Puppeteer 和 Chrome
-- **zenika/alpine-chrome**：轻量级 Alpine Linux + Chrome 镜像
-- **chromedp/headless-shell**：Chrome 官方 headless shell 镜像
+项目使用预构建的基础镜像，无需手动安装 Chrome/Chromium：
 
-当前配置通过 `RUN apk add` 命令安装 Chromium 和必要依赖，无需在构建过程中下载浏览器，大大加快构建速度。
+##### 推荐镜像选项
+
+1. **node:18-alpine with manual Chromium installation** (当前使用)
+   - 基于 Alpine Linux，轻量级
+   - Node.js 18 + 手动安装 Chromium 和依赖
+   - 最小化镜像大小，精确控制版本
+   - 适合生产环境部署
+
+2. **buildkite/puppeteer**
+   - 包含 Node.js、Puppeteer 和 Chrome
+   - Ubuntu 基础，功能完整
+   - 定期更新，稳定可靠
+
+3. **zenika/alpine-chrome**
+   - 基于 Alpine Linux，轻量级
+   - 预装最新稳定版 Chrome
+   - 专门为容器化优化
+
+4. **chromedp/headless-shell**
+   - Chrome 官方 headless shell
+   - 最小化镜像大小
+   - 最新的 Chrome 功能
+
+##### 切换镜像
+
+如需使用其他镜像，修改 `Dockerfile` 的第一行：
+
+```dockerfile
+# 当前配置：使用 node:18-alpine 并手动安装 Chromium
+FROM node:18-alpine
+
+# 安装 Chromium 和依赖
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
+
+# 或使用 buildkite/puppeteer（预构建镜像）
+FROM buildkite/puppeteer:latest
+
+# 或使用 chromedp/headless-shell
+FROM chromedp/headless-shell:latest
+RUN apk add --no-cache nodejs npm
+```
+
+#### 构建和发布镜像到 Docker Hub
+
+##### 构建镜像
+
+1. **克隆项目并进入目录**：
+```bash
+git clone <repository-url>
+cd html2pdf-service
+```
+
+2. **构建 Docker 镜像**：
+```bash
+# 使用默认标签构建
+docker build -t html2pdf-service .
+
+# 或指定版本标签
+docker build -t html2pdf-service:v1.0.0 .
+```
+
+##### 发布到 Docker Hub
+
+1. **登录 Docker Hub**：
+```bash
+docker login
+# 输入您的 Docker Hub 用户名和密码
+```
+
+2. **标记镜像**：
+```bash
+# 将镜像标记为您的 Docker Hub 仓库
+docker tag html2pdf-service:latest your-dockerhub-username/html2pdf-service:latest
+
+# 或使用版本标签
+docker tag html2pdf-service:v1.0.0 your-dockerhub-username/html2pdf-service:v1.0.0
+```
+
+3. **推送镜像**：
+```bash
+# 推送最新版本
+docker push your-dockerhub-username/html2pdf-service:latest
+
+# 推送指定版本
+docker push your-dockerhub-username/html2pdf-service:v1.0.0
+```
+
+4. **验证发布**：
+访问 https://hub.docker.com 查看您的镜像是否已发布。
+
+##### 使用已发布的镜像
+
+更新 `docker-compose.yml` 使用您的镜像：
+```yaml
+services:
+  html2pdf-service:
+    image: your-dockerhub-username/html2pdf-service:latest
+    ports:
+      - "3200:3200"
+```
+
+或直接运行：
+```bash
+docker run -p 3200:3200 your-dockerhub-username/html2pdf-service:latest
+```
+
+#### 快速部署
+
+1. **克隆项目**：
+```bash
+git clone <repository-url>
+cd html2pdf-service
+```
+
+2. **启动服务**：
+```bash
+docker-compose up -d
+```
+
+3. **验证部署**：
+```bash
+# 检查容器状态
+docker-compose ps
+
+# 查看服务日志
+docker-compose logs -f html2pdf-service
+
+# 测试健康检查
+curl http://localhost:3200/health
+```
+
+#### 生产环境配置
+
+##### 使用环境变量
+
+创建 `.env` 文件：
+```bash
+# 服务器配置
+PORT=3200
+NODE_ENV=production
+
+# Puppeteer 配置
+PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+```
+
+##### 自定义 Docker Compose 配置
+
+```yaml
+services:
+  html2pdf-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3200:3200"
+    environment:
+      - NODE_ENV=production
+      - PORT=3200
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3200/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - html2pdf-network
+    # 添加资源限制
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  html2pdf-network:
+    driver: bridge
+```
+
+##### 使用 Nginx 反向代理
+
+添加 Nginx 服务到 docker-compose.yml：
+
+```yaml
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - html2pdf-service
+    networks:
+      - html2pdf-network
+    restart: unless-stopped
+```
+
+Nginx 配置示例 (nginx.conf)：
+```nginx
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream html2pdf_backend {
+        server html2pdf-service:3200;
+    }
+
+    server {
+        listen 80;
+        server_name your-domain.com;
+
+        location / {
+            proxy_pass http://html2pdf_backend;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Proto $scheme;
+
+            # 增加超时时间，因为PDF生成可能需要时间
+            proxy_connect_timeout 300s;
+            proxy_send_timeout 300s;
+            proxy_read_timeout 300s;
+        }
+
+        # 静态文件缓存
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+            proxy_pass http://html2pdf_backend;
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+    }
+}
+```
+
+### 传统部署方式（生产环境）
+
+**注意：** 以下部署方式仅适用于生产环境，不应用于开发。开发环境必须使用 Docker 容器化方式。
+
+#### 使用 Node.js（生产环境）
+
+1. **安装系统依赖**：
+```bash
+# Ubuntu/Debian
+sudo apt-get update
+sudo apt-get install -y ca-certificates fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 lsb-release wget xdg-utils
+
+# CentOS/RHEL
+sudo yum install -y alsa-lib.x86_64 atk.x86_64 cups-libs.x86_64 gtk3.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXrandr.x86_64 libXScrnSaver.x86_64 libXtst.x86_64 xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-fonts-cyrillic xorg-x11-fonts-misc xorg-x11-fonts-Type1 xorg-x11-utils
+```
+
+2. **安装依赖**：
+```bash
+npm install --production
+```
+
+3. **安装 Puppeteer 浏览器**：
+```bash
+npx puppeteer browsers install chrome
+```
+
+4. **启动服务**：
+```bash
+npm start
+```
+
+#### 使用 PM2（生产环境）
+
+1. **全局安装 PM2**：
+```bash
+npm install -g pm2
+```
+
+2. **创建生态系统文件** (ecosystem.config.js)：
+```javascript
+module.exports = {
+  apps: [{
+    name: 'html2pdf-service',
+    script: 'server.js',
+    instances: 1,
+    autorestart: true,
+    watch: false,
+    max_memory_restart: '1G',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 3200
+    }
+  }]
+};
+```
+
+3. **启动服务**：
+```bash
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
+```
+
+### 监控和维护
+
+#### 健康检查
+
+服务提供健康检查端点：
+```bash
+curl http://localhost:3200/health
+```
+
+#### 日志查看
+
+```bash
+# Docker 日志
+docker-compose logs -f html2pdf-service
+
+# PM2 日志
+pm2 logs html2pdf-service
+```
+
+#### 性能监控
+
+- 使用 `docker stats` 监控容器资源使用
+- 使用 PM2 的 `pm2 monit` 命令监控进程
+- 设置适当的资源限制避免内存泄漏
+
+### 扩展部署
+
+#### 使用 Kubernetes
+
+创建 Kubernetes 部署文件：
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: html2pdf-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: html2pdf-service
+  template:
+    metadata:
+      labels:
+        app: html2pdf-service
+    spec:
+      containers:
+      - name: html2pdf-service
+        image: your-registry/html2pdf-service:latest
+        ports:
+        - containerPort: 3200
+        env:
+        - name: NODE_ENV
+          value: "production"
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3200
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3200
+          initialDelaySeconds: 5
+          periodSeconds: 5
+```
+
+#### 使用云服务
+
+- **AWS ECS/Fargate**：使用 docker-compose.yml 直接部署
+- **Google Cloud Run**：支持容器化部署
+- **Azure Container Instances**：快速容器部署
+- **Heroku**：支持 Docker 部署
+
+### 备份和恢复
+
+#### 数据备份
+
+由于服务是无状态的，主要备份：
+- 配置文件
+- Docker 镜像
+- 部署脚本
+
+#### 灾难恢复
+
+1. 备份 Docker 镜像：
+```bash
+docker save html2pdf-service > html2pdf-service.tar
+```
+
+2. 恢复镜像：
+```bash
+docker load < html2pdf-service.tar
+```
+
+3. 重新部署：
+```bash
+docker-compose up -d
+```
+
+### 安全注意事项
+
+1. **使用非 root 用户**：Dockerfile 已配置非 root 用户
+2. **限制资源使用**：设置 CPU 和内存限制
+3. **网络安全**：使用防火墙限制访问
+4. **HTTPS**：生产环境使用 HTTPS
+5. **定期更新**：保持基础镜像和依赖更新
 
 ## API 使用
 
@@ -297,6 +782,76 @@ convert_html_to_pdf(html)
 
 ## 开发
 
+### 代码规范
+
+#### JavaScript/Node.js 规范
+
+- 使用 ES6+ 语法
+- 使用 `async/await` 处理异步操作
+- 添加 JSDoc 注释给公共函数
+- 使用有意义的变量和函数名
+
+#### 提交规范
+
+- 使用清晰的提交信息
+- 英文提交信息优先
+- 格式：`type(scope): description`
+
+提交类型：
+- `feat`: 新功能
+- `fix`: 修复
+- `docs`: 文档更新
+- `style`: 代码格式调整
+- `refactor`: 重构
+- `test`: 测试相关
+- `chore`: 构建过程或工具配置
+
+示例：
+```
+feat: add custom PDF margin support
+fix: resolve Chromium startup timeout issue
+docs: update Docker development setup guide
+```
+
+### 测试
+
+#### 运行测试
+
+```bash
+# 在容器内运行测试
+docker-compose exec html2pdf-service npm test
+```
+
+#### 测试覆盖
+
+- 确保新功能有相应的测试
+- 保持测试覆盖率 > 80%
+- 测试包括单元测试和集成测试
+
+#### 手动测试
+
+1. 使用 Web 界面测试基本功能
+2. 测试不同的 HTML 内容和 PDF 选项
+3. 验证错误处理
+
+### 代码审查
+
+#### 审查清单
+
+- [ ] 代码符合项目规范
+- [ ] 添加了必要的测试
+- [ ] 更新了相关文档
+- [ ] 没有破坏现有功能
+- [ ] 性能没有明显下降
+
+#### 审查流程
+
+1. 创建 Pull Request
+2. 等待 CI 检查通过
+3. 至少一个维护者审查
+4. 解决审查意见
+5. 合并到主分支
+
 ### 项目结构
 
 ```
@@ -328,10 +883,55 @@ const pdfOptions = {
 
 ### 常见问题
 
+#### 开发环境问题
+
+1. **容器启动失败**
+   - 检查 Docker 版本和资源分配
+   - 确保端口 3200 未被占用
+
+2. **构建失败**
+   - 清除 Docker 缓存：`docker system prune`
+   - 检查网络连接（镜像下载）
+
+3. **PDF 生成问题**
+   - 验证 HTML 内容有效性
+   - 检查 Chromium 内存使用
+
+4. **性能问题**
+   - 监控容器资源使用：`docker stats`
+   - 调整 Docker Compose 配置
+
+#### 部署问题
+
+1. **Chromium 启动失败**：
+   - 确保容器有足够的内存（至少 512MB）
+   - 检查 PUPPETEER_EXECUTABLE_PATH 环境变量
+
+2. **PDF 生成失败**：
+   - 检查 HTML 内容是否有效
+   - 验证外部资源（如图片、字体）是否可访问
+
+3. **内存不足**：
+   - 增加容器内存限制
+   - 使用 `max_memory_restart` 配置自动重启
+
+4. **端口冲突**：
+   - 修改 docker-compose.yml 中的端口映射
+   - 检查系统端口占用情况
+
+#### 一般问题
+
 1. **浏览器启动失败**：确保 Puppeteer 有适当的权限
 2. **大型 PDF 失败**：增加 Node.js 内存限制：`node --max-old-space-size=4096 server.js`
 3. **图片无法加载**：确保图片 URL 可访问并尽可能使用 HTTPS
 4. **CSS 未应用**：检查样式是否正确嵌入或链接
+
+### 调试模式
+
+启用调试日志：
+```bash
+DEBUG=puppeteer:* npm start
+```
 
 ### 日志
 
@@ -343,17 +943,38 @@ MIT 许可证 - 详见 LICENSE 文件。
 
 ## 贡献
 
-详细的贡献指南请参考 [CONTRIBUTING.md](CONTRIBUTING.md)。
-
 **重要提醒：** 所有开发工作必须在 Docker 环境中进行，确保跨平台一致性。
 
-快速贡献步骤：
+### 文档更新
+
+#### 何时更新文档
+
+- 添加新功能时
+- 修改 API 时
+- 改变部署方式时
+- 修复重要 bug 时
+
+#### 文档文件
+
+- `README.md`: 项目概述和快速开始
+- 内联代码注释
+
+### 快速贡献步骤
+
 1. Fork 此仓库
-2. 按照 [CONTRIBUTING.md](CONTRIBUTING.md) 设置 Docker 开发环境
+2. 按照上述设置 Docker 开发环境
 3. 创建功能分支
 4. 进行修改并使用 Docker 环境测试
 5. 添加测试（如适用）
 6. 提交拉取请求
+
+### 许可证
+
+通过贡献代码，您同意您的贡献遵循项目的 MIT 许可证。
+
+### 致谢
+
+感谢所有贡献者的时间和努力！您的贡献让这个项目变得更好。
 
 ## 支持
 
