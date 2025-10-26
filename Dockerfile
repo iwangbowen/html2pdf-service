@@ -4,6 +4,17 @@ FROM ghcr.io/puppeteer/puppeteer:24.26.1
 # 切换到 root，才能安装依赖
 USER root
 
+# 更换 apt 源为国内镜像
+RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources
+
+# 安装中文字体包，包括微软雅黑等中文字体
+RUN apt-get update && apt-get install -y \
+    fonts-wqy-zenhei \
+    fonts-wqy-microhei \
+    fonts-noto-cjk \
+    fonts-noto-cjk-extra \
+    && rm -rf /var/lib/apt/lists/*
+
 # 设置工作目录
 WORKDIR /app
 
