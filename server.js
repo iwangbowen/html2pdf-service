@@ -23,16 +23,23 @@ app.post('/convert', async (req, res) => {
       return res.status(400).json({ error: 'HTML content is required' });
     }
 
-    // Launch browser
+    // Launch browser (增加稳定参数，不影响原有逻辑)
     const browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage', // 避免 Docker 共享内存不足
+        '--disable-gpu'
+      ]
     });
 
     const page = await browser.newPage();
 
-    // Set content
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+    // Set content and ensure rendering stability
+    await page.setContent(html, { waitUntil: ['networkidle0', 'domcontentloaded'] });
+    await page.evaluateHandle('document.fonts.ready').catch(() => { });
+    await new Promise(r => setTimeout(r, 100)); // ✅ 替代旧版 waitForTimeout
 
     // Default PDF options (mimics browser print)
     const pdfOptions = {
@@ -55,12 +62,13 @@ app.post('/convert', async (req, res) => {
 
     console.log(`[${timestamp}] PDF conversion successful, size: ${pdfBuffer.length} bytes`);
 
-    // Set response headers
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="converted.pdf"');
-
-    // Send PDF
-    res.send(pdfBuffer);
+    // ✅ 修复 PDF 文件损坏问题（改为明确的二进制输出）
+    res.writeHead(200, {
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename="converted.pdf"',
+      'Content-Length': pdfBuffer.length
+    });
+    res.end(pdfBuffer);
 
   } catch (error) {
     console.error(`[${timestamp}] PDF conversion error:`, error);
