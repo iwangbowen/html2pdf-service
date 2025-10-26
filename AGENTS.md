@@ -1,11 +1,11 @@
 # HTML to PDF 服务 - 代理准则
 
 ## 构建/开发命令
-- **启动开发环境**: `docker-compose up -d`
-- **代码变更后重新构建**: `docker-compose build --no-cache && docker-compose up -d`
-- **在容器内调试**: `docker-compose exec html2pdf-service sh`
-- **停止服务**: `docker-compose down`
-- **查看日志**: `docker-compose logs -f html2pdf-service`
+- **启动开发环境**: `docker compose up -d`
+- **代码变更后重新构建**: `docker compose build --no-cache && docker compose up -d`
+- **在容器内调试**: `docker compose exec html2pdf-service sh`
+- **停止服务**: `docker compose down`
+- **查看日志**: `docker compose logs -f html2pdf-service`
 
 **⚠️ 所有开发必须使用 Docker - 不支持本地 `npm start` 或 `node server.js`**
 

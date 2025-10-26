@@ -33,7 +33,7 @@ cd html2pdf-service
 1. **启动开发环境**：
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 1. **验证环境**：
@@ -43,7 +43,7 @@ docker-compose up -d
 curl http://localhost:3200/health
 
 # 查看日志
-docker-compose logs -f html2pdf-service
+docker compose logs -f html2pdf-service
 ```
 
 服务将在 `http://localhost:3200` 上可用
@@ -54,19 +54,19 @@ docker-compose logs -f html2pdf-service
 
 ```bash
 # 查看服务状态
-docker-compose ps
+docker compose ps
 
 # 查看实时日志
-docker-compose logs -f html2pdf-service
+docker compose logs -f html2pdf-service
 
 # 停止服务
-docker-compose down
+docker compose down
 
 # 重新构建镜像（代码变更后）
-docker-compose build --no-cache
+docker compose build --no-cache
 
 # 进入容器进行调试
-docker-compose exec html2pdf-service sh
+docker compose exec html2pdf-service sh
 ```
 
 #### 代码修改和测试
@@ -77,7 +77,7 @@ docker-compose exec html2pdf-service sh
 
 ```bash
 # 重新构建镜像并重启服务
-docker-compose build --no-cache && docker-compose up -d
+docker compose build --no-cache && docker compose up -d
 ```
 
 1. **测试更改**：
@@ -98,19 +98,19 @@ open http://localhost:3200
 - **查看实时日志**：
 
 ```bash
-docker-compose logs -f html2pdf-service
+docker compose logs -f html2pdf-service
 ```
 
 - **进入容器调试**：
 
 ```bash
-docker-compose exec html2pdf-service sh
+docker compose exec html2pdf-service sh
 ```
 
 - **检查容器状态**：
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 #### 性能优化开发
@@ -137,7 +137,7 @@ services:
 1. 重启服务：
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 **警告**：卷挂载仅用于开发调试，最终测试和提交前必须使用完整 Docker 构建。
@@ -295,17 +295,17 @@ cd html2pdf-service
 1. **启动服务**：
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 1. **验证部署**：
 
 ```bash
 # 检查容器状态
-docker-compose ps
+docker compose ps
 
 # 查看服务日志
-docker-compose logs -f html2pdf-service
+docker compose logs -f html2pdf-service
 
 # 测试健康检查
 curl http://localhost:3200/health
@@ -605,7 +605,7 @@ docker load < html2pdf-service.tar
 1. 重新部署：
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 安全注意事项
