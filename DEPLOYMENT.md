@@ -62,6 +62,70 @@ FROM chromedp/headless-shell:latest
 RUN apk add --no-cache nodejs npm
 ```
 
+### 构建和发布镜像到 Docker Hub
+
+#### 构建镜像
+
+1. **克隆项目并进入目录**：
+```bash
+git clone <repository-url>
+cd html2pdf-service
+```
+
+2. **构建 Docker 镜像**：
+```bash
+# 使用默认标签构建
+docker build -t html2pdf-service .
+
+# 或指定版本标签
+docker build -t html2pdf-service:v1.0.0 .
+```
+
+#### 发布到 Docker Hub
+
+1. **登录 Docker Hub**：
+```bash
+docker login
+# 输入您的 Docker Hub 用户名和密码
+```
+
+2. **标记镜像**：
+```bash
+# 将镜像标记为您的 Docker Hub 仓库
+docker tag html2pdf-service:latest your-dockerhub-username/html2pdf-service:latest
+
+# 或使用版本标签
+docker tag html2pdf-service:v1.0.0 your-dockerhub-username/html2pdf-service:v1.0.0
+```
+
+3. **推送镜像**：
+```bash
+# 推送最新版本
+docker push your-dockerhub-username/html2pdf-service:latest
+
+# 推送指定版本
+docker push your-dockerhub-username/html2pdf-service:v1.0.0
+```
+
+4. **验证发布**：
+访问 https://hub.docker.com 查看您的镜像是否已发布。
+
+#### 使用已发布的镜像
+
+更新 `docker-compose.yml` 使用您的镜像：
+```yaml
+services:
+  html2pdf-service:
+    image: your-dockerhub-username/html2pdf-service:latest
+    ports:
+      - "3100:3100"
+```
+
+或直接运行：
+```bash
+docker run -p 3100:3100 your-dockerhub-username/html2pdf-service:latest
+```
+
 ### 快速部署
 
 1. **克隆项目**：
