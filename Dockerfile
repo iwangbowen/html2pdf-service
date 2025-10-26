@@ -1,38 +1,38 @@
-# Use Node.js 18 Alpine as base image
-FROM node:18-alpine
+# 使用 Puppeteer 官方镜像（Node 20 + Chromium）
+FROM ghcr.io/puppeteer/puppeteer:24.26.1
 
-# Install Chromium and dependencies
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    freetype-dev \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont
+# 切换到 root，才能安装依赖
+USER root
 
-# Set working directory
+# 设置工作目录
 WORKDIR /app
 
-# Set Puppeteer to skip downloading Chromium and set executable path
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+# 设置国内镜像源，替换 puppeteer 的 Chromium 下载地址
+ENV PUPPETEER_DOWNLOAD_BASE_URL="https://npmmirror.com/mirrors/chromium/"
+ENV NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 
-# Copy package files
+# 拷贝依赖文件
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --production && npm cache clean --force
+# 安装依赖
+RUN npm install --omit=dev && npm cache clean --force
 
-# Copy application code
+# 拷贝全部代码
 COPY . .
 
-# Expose port
+# 修改文件权限，确保后续运行用户有权限访问
+RUN chown -R pptruser:pptruser /app
+
+# 切回 Puppeteer 默认用户，安全执行
+USER pptruser
+
+# 暴露端口
 EXPOSE 3200
 
-# Health check
+# 健康检查（可选）
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD node -e "require('http').get('http://localhost:3200/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"
 
-# Start the application
-CMD ["npm", "start"]
+# 启动服务
+CMD ["node", "server.js"]
