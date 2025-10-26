@@ -24,17 +24,20 @@
 ### 开发环境设置
 
 1. **克隆仓库**：
+
 ```bash
 git clone <repository-url>
 cd html2pdf-service
 ```
 
-2. **启动开发环境**：
+1. **启动开发环境**：
+
 ```bash
 docker-compose up -d
 ```
 
-3. **验证环境**：
+1. **验证环境**：
+
 ```bash
 # 检查服务状态
 curl http://localhost:3200/health
@@ -70,13 +73,15 @@ docker-compose exec html2pdf-service sh
 
 1. **修改代码**：直接编辑项目文件
 
-2. **重新构建和重启**：
+1. **重新构建和重启**：
+
 ```bash
 # 重新构建镜像并重启服务
 docker-compose build --no-cache && docker-compose up -d
 ```
 
-3. **测试更改**：
+1. **测试更改**：
+
 ```bash
 # 测试 API
 curl -X POST http://localhost:3200/convert \
@@ -91,16 +96,19 @@ open http://localhost:3200
 #### 调试技巧
 
 - **查看实时日志**：
+
 ```bash
 docker-compose logs -f html2pdf-service
 ```
 
 - **进入容器调试**：
+
 ```bash
 docker-compose exec html2pdf-service sh
 ```
 
 - **检查容器状态**：
+
 ```bash
 docker-compose ps
 ```
@@ -110,6 +118,7 @@ docker-compose ps
 对于频繁的代码迭代，可以临时启用卷挂载（注意：这可能影响性能）：
 
 1. 修改 `docker-compose.yml`：
+
 ```yaml
 services:
   html2pdf-service:
@@ -125,7 +134,8 @@ services:
       - NODE_ENV=development
 ```
 
-2. 重启服务：
+1. 重启服务：
+
 ```bash
 docker-compose up -d
 ```
@@ -144,7 +154,7 @@ docker-compose up -d
 
 ### Docker 部署（推荐）
 
-#### 前置要求
+#### Docker 部署前置要求
 
 - Docker >= 20.0
 - Docker Compose >= 2.0
@@ -207,12 +217,14 @@ RUN apk add --no-cache nodejs npm
 ##### 构建镜像
 
 1. **克隆项目并进入目录**：
+
 ```bash
 git clone <repository-url>
 cd html2pdf-service
 ```
 
-2. **构建 Docker 镜像**：
+1. **构建 Docker 镜像**：
+
 ```bash
 # 使用默认标签构建
 docker build -t html2pdf-service .
@@ -224,12 +236,14 @@ docker build -t html2pdf-service:v1.0.0 .
 ##### 发布到 Docker Hub
 
 1. **登录 Docker Hub**：
+
 ```bash
 docker login
 # 输入您的 Docker Hub 用户名和密码
 ```
 
-2. **标记镜像**：
+1. **标记镜像**：
+
 ```bash
 # 将镜像标记为您的 Docker Hub 仓库
 docker tag html2pdf-service:latest your-dockerhub-username/html2pdf-service:latest
@@ -238,7 +252,8 @@ docker tag html2pdf-service:latest your-dockerhub-username/html2pdf-service:late
 docker tag html2pdf-service:v1.0.0 your-dockerhub-username/html2pdf-service:v1.0.0
 ```
 
-3. **推送镜像**：
+1. **推送镜像**：
+
 ```bash
 # 推送最新版本
 docker push your-dockerhub-username/html2pdf-service:latest
@@ -247,12 +262,13 @@ docker push your-dockerhub-username/html2pdf-service:latest
 docker push your-dockerhub-username/html2pdf-service:v1.0.0
 ```
 
-4. **验证发布**：
+1. **验证发布**：
 访问 https://hub.docker.com 查看您的镜像是否已发布。
 
 ##### 使用已发布的镜像
 
 更新 `docker-compose.yml` 使用您的镜像：
+
 ```yaml
 services:
   html2pdf-service:
@@ -262,6 +278,7 @@ services:
 ```
 
 或直接运行：
+
 ```bash
 docker run -p 3200:3200 your-dockerhub-username/html2pdf-service:latest
 ```
@@ -269,17 +286,20 @@ docker run -p 3200:3200 your-dockerhub-username/html2pdf-service:latest
 #### 快速部署
 
 1. **克隆项目**：
+
 ```bash
 git clone <repository-url>
 cd html2pdf-service
 ```
 
-2. **启动服务**：
+1. **启动服务**：
+
 ```bash
 docker-compose up -d
 ```
 
-3. **验证部署**：
+1. **验证部署**：
+
 ```bash
 # 检查容器状态
 docker-compose ps
@@ -296,6 +316,7 @@ curl http://localhost:3200/health
 ##### 使用环境变量
 
 创建 `.env` 文件：
+
 ```bash
 # 服务器配置
 PORT=3200
@@ -365,6 +386,7 @@ services:
 ```
 
 Nginx 配置示例 (nginx.conf)：
+
 ```nginx
 events {
     worker_connections 1024;
@@ -409,26 +431,29 @@ http {
 #### 使用 Node.js（生产环境）
 
 1. **安装系统依赖**：
+
 ```bash
 # Ubuntu/Debian
 sudo apt-get update
 sudo apt-get install -y ca-certificates fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 lsb-release wget xdg-utils
 
-# CentOS/RHEL
-sudo yum install -y alsa-lib.x86_64 atk.x86_64 cups-libs.x86_64 gtk3.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXrandr.x86_64 libXScrnSaver.x86_64 libXtst.x86_64 xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-fonts-cyrillic xorg-x11-fonts-misc xorg-x11-fonts-Type1 xorg-x11-utils
+
 ```
 
-2. **安装依赖**：
+1. **安装依赖**：
+
 ```bash
 npm install --production
 ```
 
-3. **安装 Puppeteer 浏览器**：
+1. **安装 Puppeteer 浏览器**：
+
 ```bash
 npx puppeteer browsers install chrome
 ```
 
-4. **启动服务**：
+1. **启动服务**：
+
 ```bash
 npm start
 ```
@@ -436,11 +461,13 @@ npm start
 #### 使用 PM2（生产环境）
 
 1. **全局安装 PM2**：
+
 ```bash
 npm install -g pm2
 ```
 
-2. **创建生态系统文件** (ecosystem.config.js)：
+1. **创建生态系统文件** (ecosystem.config.js)：
+
 ```javascript
 module.exports = {
   apps: [{
@@ -458,7 +485,8 @@ module.exports = {
 };
 ```
 
-3. **启动服务**：
+1. **启动服务**：
+
 ```bash
 pm2 start ecosystem.config.js
 pm2 save
@@ -470,6 +498,7 @@ pm2 startup
 #### 健康检查
 
 服务提供健康检查端点：
+
 ```bash
 curl http://localhost:3200/health
 ```
@@ -552,23 +581,29 @@ spec:
 #### 数据备份
 
 由于服务是无状态的，主要备份：
+
 - 配置文件
+
 - Docker 镜像
+
 - 部署脚本
 
 #### 灾难恢复
 
 1. 备份 Docker 镜像：
+
 ```bash
 docker save html2pdf-service > html2pdf-service.tar
 ```
 
-2. 恢复镜像：
+1. 恢复镜像：
+
 ```bash
 docker load < html2pdf-service.tar
 ```
 
-3. 重新部署：
+1. 重新部署：
+
 ```bash
 docker-compose up -d
 ```
@@ -590,6 +625,7 @@ docker-compose up -d
 **Content-Type：** `application/json`
 
 **请求体：**
+
 ```json
 {
   "html": "<!DOCTYPE html><html><body><h1>Hello World</h1></body></html>",
@@ -734,9 +770,11 @@ convert_html_to_pdf(html)
 - 尝试预构建的示例（简单文本、样式内容、表格、图片）
 - 查看实时转换结果
 
-## 健康检查
+## 健康检查 API
 
 **端点：** `GET /health`
+
+## 健康检查端点
 
 返回服务状态信息。
 
@@ -798,6 +836,7 @@ convert_html_to_pdf(html)
 - 格式：`type(scope): description`
 
 提交类型：
+
 - `feat`: 新功能
 - `fix`: 修复
 - `docs`: 文档更新
@@ -807,7 +846,8 @@ convert_html_to_pdf(html)
 - `chore`: 构建过程或工具配置
 
 示例：
-```
+
+```text
 feat: add custom PDF margin support
 fix: resolve Chromium startup timeout issue
 docs: update Docker development setup guide
@@ -854,7 +894,7 @@ docker-compose exec html2pdf-service npm test
 
 ### 项目结构
 
-```
+```text
 html2pdf-service/
 ├── server.js          # 主服务器文件
 ├── package.json       # 依赖和脚本
@@ -929,6 +969,7 @@ const pdfOptions = {
 ### 调试模式
 
 启用调试日志：
+
 ```bash
 DEBUG=puppeteer:* npm start
 ```
@@ -962,13 +1003,13 @@ MIT 许可证 - 详见 LICENSE 文件。
 ### 快速贡献步骤
 
 1. Fork 此仓库
-2. 按照上述设置 Docker 开发环境
-3. 创建功能分支
-4. 进行修改并使用 Docker 环境测试
-5. 添加测试（如适用）
-6. 提交拉取请求
+1. 按照上述设置 Docker 开发环境
+1. 创建功能分支
+1. 进行修改并使用 Docker 环境测试
+1. 添加测试（如适用）
+1. 提交拉取请求
 
-### 许可证
+### 许可证协议
 
 通过贡献代码，您同意您的贡献遵循项目的 MIT 许可证。
 
