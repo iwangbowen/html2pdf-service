@@ -33,7 +33,7 @@ cd html2pdf-service
 docker-compose up -d
 ```
 
-服务将在 `http://localhost:3100` 上可用
+服务将在 `http://localhost:3200` 上可用
 
 #### 其他 Docker 命令
 
@@ -81,7 +81,7 @@ npm start
 npm run dev
 ```
 
-服务将在 `http://localhost:3100` 上可用
+服务将在 `http://localhost:3200` 上可用
 
 ## 部署
 
@@ -147,7 +147,7 @@ npm run dev
 ### 使用 curl 示例
 
 ```bash
-curl -X POST http://localhost:3100/convert \
+curl -X POST http://localhost:3200/convert \
   -H "Content-Type: application/json" \
   -d '{
     "html": "<!DOCTYPE html><html><body><h1>My PDF</h1><p>This is content.</p></body></html>"
@@ -162,7 +162,7 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 
 async function convertToPDF(html) {
-  const response = await fetch('http://localhost:3100/convert', {
+  const response = await fetch('http://localhost:3200/convert', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -213,7 +213,7 @@ import requests
 import json
 
 def convert_html_to_pdf(html_content, output_file='output.pdf'):
-    url = 'http://localhost:3100/convert'
+    url = 'http://localhost:3200/convert'
     payload = {
         'html': html_content,
         'options': {
@@ -254,7 +254,7 @@ convert_html_to_pdf(html)
 
 ## Web 界面
 
-访问 `http://localhost:3100` 来使用内置演示界面，您可以：
+访问 `http://localhost:3200` 来使用内置演示界面，您可以：
 
 - 测试 HTML 到 PDF 转换
 - 尝试预构建的示例（简单文本、样式内容、表格、图片）
@@ -277,7 +277,7 @@ convert_html_to_pdf(html)
 
 ### 环境变量
 
-- `PORT`：服务器端口 (默认: 3100)
+- `PORT`：服务器端口 (默认: 3200)
 
 ### Puppeteer 选项
 

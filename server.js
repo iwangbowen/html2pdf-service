@@ -2,7 +2,7 @@ const express = require('express');
 const puppeteer = require('puppeteer');
 
 const app = express();
-const PORT = process.env.PORT || 3100;
+const PORT = process.env.PORT || 3200;
 
 // Middleware to parse JSON bodies
 app.use(express.json({ limit: '10mb' }));
