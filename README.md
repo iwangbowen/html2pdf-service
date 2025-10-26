@@ -95,13 +95,17 @@ npm run dev
 
 ### Docker 镜像说明
 
-项目使用预构建的 Chrome/Chromium 基础镜像，无需手动安装浏览器：
+项目使用轻量级基础镜像，通过 Dockerfile 手动安装 Chromium，无需预构建镜像：
 
-- **buildkite/puppeteer**：当前使用的完整镜像，包含 Node.js、Puppeteer 和 Chrome
+- **node:18-alpine with manual Chromium installation**：当前使用的轻量级镜像，基于 Alpine Linux
+  - Node.js 18 + 手动安装 Chromium 和系统依赖
+  - 最小化镜像大小，精确控制版本
+  - 适合生产环境部署
+- **buildkite/puppeteer**：完整镜像，包含 Node.js、Puppeteer 和 Chrome
 - **zenika/alpine-chrome**：轻量级 Alpine Linux + Chrome 镜像
 - **chromedp/headless-shell**：Chrome 官方 headless shell 镜像
 
-这些镜像已经预装了 Chromium/Chrome，无需在构建过程中下载，大大加快构建速度。
+当前配置通过 `RUN apk add` 命令安装 Chromium 和必要依赖，无需在构建过程中下载浏览器，大大加快构建速度。
 
 ## API 使用
 

@@ -15,17 +15,23 @@
 
 #### 推荐镜像选项
 
-1. **buildkite/puppeteer** (当前使用)
+1. **node:18-alpine with manual Chromium installation** (当前使用)
+   - 基于 Alpine Linux，轻量级
+   - Node.js 18 + 手动安装 Chromium 和依赖
+   - 最小化镜像大小，精确控制版本
+   - 适合生产环境部署
+
+2. **buildkite/puppeteer**
    - 包含 Node.js、Puppeteer 和 Chrome
    - Ubuntu 基础，功能完整
    - 定期更新，稳定可靠
 
-2. **zenika/alpine-chrome**
+3. **zenika/alpine-chrome**
    - 基于 Alpine Linux，轻量级
    - 预装最新稳定版 Chrome
    - 专门为容器化优化
 
-3. **chromedp/headless-shell**
+4. **chromedp/headless-shell**
    - Chrome 官方 headless shell
    - 最小化镜像大小
    - 最新的 Chrome 功能
@@ -35,7 +41,20 @@
 如需使用其他镜像，修改 `Dockerfile` 的第一行：
 
 ```dockerfile
-# 使用 buildkite/puppeteer
+# 当前配置：使用 node:18-alpine 并手动安装 Chromium
+FROM node:18-alpine
+
+# 安装 Chromium 和依赖
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
+
+# 或使用 buildkite/puppeteer（预构建镜像）
 FROM buildkite/puppeteer:latest
 
 # 或使用 chromedp/headless-shell

@@ -1,12 +1,22 @@
-# Use pre-built Puppeteer image with Node.js and Chromium
-FROM buildkite/puppeteer:latest
+# Use Node.js 18 Alpine as base image
+FROM node:18-alpine
+
+# Install Chromium and dependencies
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
 
 # Set working directory
 WORKDIR /app
 
-# Set Puppeteer to skip downloading Chromium (already included in base image)
+# Set Puppeteer to skip downloading Chromium and set executable path
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Copy package files
 COPY package*.json ./
