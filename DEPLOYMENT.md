@@ -1,6 +1,95 @@
-# 部署指南
+# 部署和开发环境指南
 
-本文档介绍如何部署 HTML to PDF 服务。
+本文档介绍如何在不同环境中部署和开发 HTML to PDF 服务。
+
+## 开发环境
+
+**重要：** 为确保跨平台一致性，所有开发工作必须在 Docker 容器化环境中进行。本项目不支持本地 Node.js 环境开发。
+
+### Docker 开发环境设置
+
+#### 前置要求
+
+- Docker >= 20.0
+- Docker Compose >= 2.0
+
+#### 快速启动开发环境
+
+1. **克隆项目**：
+```bash
+git clone <repository-url>
+cd html2pdf-service
+```
+
+2. **启动开发环境**：
+```bash
+docker-compose up -d
+```
+
+3. **验证服务**：
+```bash
+# 检查容器状态
+docker-compose ps
+
+# 查看服务日志
+docker-compose logs -f html2pdf-service
+
+# 测试健康检查
+curl http://localhost:3200/health
+```
+
+#### 开发工作流
+
+- **代码修改**：编辑源代码后重新构建：
+```bash
+docker-compose build --no-cache && docker-compose up -d
+```
+
+- **调试**：进入容器内部：
+```bash
+docker-compose exec html2pdf-service sh
+```
+
+- **日志监控**：
+```bash
+docker-compose logs -f html2pdf-service
+```
+
+- **停止环境**：
+```bash
+docker-compose down
+```
+
+#### 开发环境配置
+
+对于需要频繁代码迭代的场景，可以修改 `docker-compose.yml` 添加卷挂载：
+
+```yaml
+services:
+  html2pdf-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3200:3200"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3200
+    restart: unless-stopped
+```
+
+**注意**：卷挂载可能影响热重载性能，建议在最终测试时使用完整构建。
+
+### 为什么强制使用 Docker 开发？
+
+- **环境一致性**：确保所有开发者使用相同的 Node.js 版本、Puppeteer 版本和系统依赖
+- **跨平台兼容**：Windows、macOS、Linux 开发体验完全一致
+- **依赖隔离**：避免本地环境污染和版本冲突
+- **CI/CD 对齐**：开发环境与生产部署环境完全相同
+- **简化 onboarding**：新开发者无需配置复杂的本地环境
 
 ## Docker 部署（推荐）
 
@@ -262,21 +351,33 @@ http {
 }
 ```
 
-## 本地部署
+## 传统部署方式（生产环境）
 
-### 使用 Node.js
+**注意：** 以下部署方式仅适用于生产环境，不应用于开发。开发环境必须使用 Docker 容器化方式。
 
-1. **安装依赖**：
+### 使用 Node.js（生产环境）
+
+1. **安装系统依赖**：
 ```bash
-npm install
+# Ubuntu/Debian
+sudo apt-get update
+sudo apt-get install -y ca-certificates fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 lsb-release wget xdg-utils
+
+# CentOS/RHEL
+sudo yum install -y alsa-lib.x86_64 atk.x86_64 cups-libs.x86_64 gtk3.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXrandr.x86_64 libXScrnSaver.x86_64 libXtst.x86_64 xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-fonts-cyrillic xorg-x11-fonts-misc xorg-x11-fonts-Type1 xorg-x11-utils
 ```
 
-2. **安装 Puppeteer 浏览器**：
+2. **安装依赖**：
+```bash
+npm install --production
+```
+
+3. **安装 Puppeteer 浏览器**：
 ```bash
 npx puppeteer browsers install chrome
 ```
 
-3. **启动服务**：
+4. **启动服务**：
 ```bash
 npm start
 ```

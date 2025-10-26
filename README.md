@@ -13,14 +13,14 @@
 
 ## 快速开始
 
-### 方法一：使用 Docker（推荐）
+**重要：** 为确保不同平台和环境的一致开发体验，所有开发和测试必须使用 Docker 容器化环境。本项目不支持本地直接运行 Node.js 环境。
 
-#### 前置要求
+### 前置要求
 
-- Docker
-- Docker Compose
+- Docker (>= 20.0)
+- Docker Compose (>= 2.0)
 
-#### 快速启动
+### 开发环境设置
 
 1. 克隆仓库：
 ```bash
@@ -28,60 +28,49 @@ git clone <repository-url>
 cd html2pdf-service
 ```
 
-2. 使用 Docker Compose 启动：
+2. 使用 Docker Compose 启动开发环境：
 ```bash
 docker-compose up -d
 ```
 
 服务将在 `http://localhost:3200` 上可用
 
-#### 其他 Docker 命令
+### 开发工作流
+
+#### 常用 Docker 命令
 
 ```bash
 # 查看服务状态
 docker-compose ps
 
-# 查看日志
+# 查看实时日志
 docker-compose logs -f html2pdf-service
 
 # 停止服务
 docker-compose down
 
-# 重新构建镜像
+# 重新构建镜像（代码变更后）
 docker-compose build --no-cache
+
+# 进入容器进行调试
+docker-compose exec html2pdf-service sh
 ```
 
-### 方法二：本地开发
+#### 代码开发
 
-#### 前置要求
-
-- Node.js (v14 或更高版本)
-- npm 或 yarn
-
-#### 安装和运行
-
-1. 克隆仓库：
+- 修改代码后，重新构建镜像以应用更改：
 ```bash
-git clone <repository-url>
-cd html2pdf-service
+docker-compose build --no-cache && docker-compose up -d
 ```
 
-2. 安装依赖：
-```bash
-npm install
-```
+- 对于频繁的代码迭代，可以使用卷挂载（如果需要热重载，请参考 CONTRIBUTING.md）
 
-3. 启动服务：
-```bash
-npm start
-```
+### 为什么使用 Docker？
 
-开发模式（自动重启）：
-```bash
-npm run dev
-```
-
-服务将在 `http://localhost:3200` 上可用
+- **环境一致性**：确保所有开发者和 CI/CD 环境完全一致
+- **依赖隔离**：避免系统级依赖冲突
+- **简化部署**：开发环境与生产环境完全相同
+- **跨平台兼容**：Windows、macOS、Linux 行为一致
 
 ## 部署
 
@@ -354,11 +343,17 @@ MIT 许可证 - 详见 LICENSE 文件。
 
 ## 贡献
 
+详细的贡献指南请参考 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+**重要提醒：** 所有开发工作必须在 Docker 环境中进行，确保跨平台一致性。
+
+快速贡献步骤：
 1. Fork 此仓库
-2. 创建功能分支
-3. 进行修改
-4. 添加测试（如适用）
-5. 提交拉取请求
+2. 按照 [CONTRIBUTING.md](CONTRIBUTING.md) 设置 Docker 开发环境
+3. 创建功能分支
+4. 进行修改并使用 Docker 环境测试
+5. 添加测试（如适用）
+6. 提交拉取请求
 
 ## 支持
 
